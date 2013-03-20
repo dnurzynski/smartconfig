@@ -18,7 +18,19 @@ describe SmartConfig do
       subject.load
     end
 
-    it 'tries to store setting'
+    it 'tries to store setting' do
+      fake_settings_adapter.should_receive(:each) do |&block|
+        block.call [:test, 'value']
+      end
+
+      setting = double()
+      setting.should_receive(:set).with('value')
+
+      SmartConfig::Setting.stub(:new) { setting }
+
+      subject.add_key(:test)
+      subject.load
+    end
   end
 
   context 'keys during setup' do
