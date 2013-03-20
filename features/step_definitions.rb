@@ -1,5 +1,7 @@
 Given /^SmartConfig definition$/ do |string|
-  @config = eval string
+  in_current_dir do
+    @config = eval string
+  end
 end
 
 When /^I access "(.*?)"$/ do |arg1|

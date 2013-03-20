@@ -1,26 +1,28 @@
 require_relative 'smartconfig/proxy'
 require_relative 'smartconfig/setting'
+require_relative 'smartconfig/adapters/yaml'
 
 class SmartConfig
   KeyExists = Class.new(StandardError)
 
-  def self.new! options = {}
-    new(options).tap do |config|
-      config.load
-      config.freeze
-    end
+  def self.new!(*adapters, &block)
+    config = new(*adapters, &block)
+    config.load
+    config
   end
 
-  def initialize options = {}
+  def initialize(*adapters)
     @settings = {}
+    @adapters = adapters.map do |adapter|
+      case adapter
+      when /\.yml$/, /\.yaml$/
+        Adapters::Yaml.new adapter
+      else
+        adapter
+      end
+    end
 
-    @adapters = if options[:adapter]
-                  [options[:adapter]]
-                else
-                  options[:adapters]
-                end
-
-    yield Proxy.new self if block_given?
+    yield Proxy.new(self) if block_given?
   end
 
   def load

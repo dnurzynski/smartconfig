@@ -2,7 +2,7 @@ require_relative 'spec_helper'
 
 describe SmartConfig do
   let(:fake_settings_adapter) { double() }
-  subject { described_class.new(:adapter => fake_settings_adapter) }
+  subject { described_class.new(fake_settings_adapter) }
 
   context 'constructor' do
     it 'yields if block given' do
@@ -12,11 +12,16 @@ describe SmartConfig do
     end
   end
 
-  context 'keys during setup' do
-    it 'can be added' do
-      expect(subject).to respond_to :add_key
+  context 'load' do
+    it 'iterates over provided adapters' do
+      fake_settings_adapter.should_receive(:each)
+      subject.load
     end
 
+    it 'tries to store setting'
+  end
+
+  context 'keys during setup' do
     it 'cannot be added twice' do
       subject.add_key :test
       expect {
@@ -30,6 +35,14 @@ describe SmartConfig do
       }.not_to raise_error
     end
   end
+
+  context '#add_key' do
+    it 'creates Setting when called' do
+      SmartConfig::Setting.should_receive(:new).and_call_original
+      subject.add_key :any_name
+    end
+  end
+
 
   context 'setting with default' do
     it 'can be defined' do
