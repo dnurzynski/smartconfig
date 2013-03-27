@@ -10,7 +10,7 @@ Feature: yaml configs
     """
     And SmartConfig definition
     """
-    SmartConfig.new! do |config|
+    SmartConfig.new!('config.yml') do |config|
       config.key :keyname
     end
     """
